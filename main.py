@@ -5,8 +5,7 @@ import torch
 from torchvision import models
 
 from functions import *
-from models import model
-from models.ResNet import ResNet18
+from models import *
 
 
 def get_config():
@@ -74,7 +73,7 @@ def main(cfg):
     cfg["device"] = device
     
     data, in_channels, num_classes = get_dataset(cfg)
-    model = ResNet18(in_channels, num_classes)
+    model = build_resnet18(in_channels, num_classes)
     model.to(device)
 
     train(data, model, cfg)

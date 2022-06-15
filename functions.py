@@ -3,6 +3,7 @@ from torch import nn
 from torchvision import datasets
 from torchvision.transforms import ToTensor
 from torch.utils.data import DataLoader
+from graphs import *
 
 
 def get_dataset(cfg):
@@ -20,8 +21,8 @@ def get_dataset(cfg):
 
     return data, in_channels, num_classes
 
-
-def train(data, model, cfg):
+g = graphs()
+def train(data, model, cfg, g):
     device = cfg["device"]
     batch_size = cfg["batch_size"]
     learning_rate = cfg["learning_rate"]
@@ -47,4 +48,11 @@ def train(data, model, cfg):
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-        
+
+            # Perform analysis
+            
+
+
+def analysis(data, model): 
+
+    return None
