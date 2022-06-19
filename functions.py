@@ -3,7 +3,6 @@ from torch import nn
 from torchvision import datasets
 from torchvision.transforms import ToTensor
 from torch.utils.data import DataLoader
-from graphs import *
 
 
 def get_dataset(cfg):
@@ -21,8 +20,8 @@ def get_dataset(cfg):
 
     return data, in_channels, num_classes
 
-g = graphs()
-def train(data, model, cfg, g):
+
+def train(data, model, cfg):
     device = cfg["device"]
     batch_size = cfg["batch_size"]
     learning_rate = cfg["learning_rate"]
@@ -33,8 +32,8 @@ def train(data, model, cfg, g):
     train_loader = DataLoader(data, batch_size=batch_size, shuffle=True)
 
     for epoch in range(num_epochs):
-        print(f"Epoch {epoch + 1}\n-------------------------------")
-
+        avg_accuracy = 0
+        avg_loss = 0
         for batch_idx, (X, y) in enumerate(train_loader):
             X, y = X.to(device), y.to(device)
 
@@ -49,8 +48,13 @@ def train(data, model, cfg, g):
             loss.backward()
             optimizer.step()
 
-            # Perform analysis
-            
+            batch_accuracy = torch.mean((torch.argmax(pred, dim=1) == y).float()).item()
+            avg_accuracy += batch_accuracy
+            avg_loss += loss
+        
+        avg_accuracy /= (batch_idx + 1)
+        avg_loss /= (batch_idx + 1)
+        print(f"Epoch {epoch + 1}: Loss {avg_loss:.4f}, Accuracy {avg_accuracy:.4f}")
 
 
 def analysis(data, model): 

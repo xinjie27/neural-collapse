@@ -1,5 +1,6 @@
 import torch
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = "cuda"
 
 import gc
 import numpy as np
@@ -15,7 +16,7 @@ from scipy.sparse.linalg import svds
 from torchvision import datasets, transforms
 from IPython import embed
 
-debug = True # Only runs 20 batches per epoch for debugging
+debug = False # Only runs 20 batches per epoch for debugging
 
 # dataset parameters
 im_size             = 28
