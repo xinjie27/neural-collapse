@@ -14,7 +14,7 @@ def build_resnet18(in_channels, num_classes):
 def build_vgg11(in_channels, num_classes):
     model = models.vgg11(pretrained=False, num_classes=num_classes)
     # TODO
-    return model
+    pass
 
 
 def build_densenet():
