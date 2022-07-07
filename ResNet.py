@@ -41,6 +41,9 @@ class ResBlock(nn.Module):
 class ResNet18(nn.Module):
     def __init__(self, in_channels, num_classes=10):
         super().__init__()
+        self.in_channels = in_channels
+        self.num_classes = num_classes
+
         self.layer0 = nn.Sequential(
             nn.Conv2d(in_channels, 64, kernel_size=7, stride=2, padding=3),
             nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
@@ -78,3 +81,60 @@ class ResNet18(nn.Module):
         input = self.fc(input)
 
         return input
+    
+    # Helper functions for analysis
+
+    def get_layer0_output(self, input):
+        input = self.layer0(input)
+        return input
+
+    def get_layer1_output(self, input):
+        input = self.layer0(input)
+        input = self.layer1(input)
+        return input
+
+    def get_layer2_output(self, input):
+        input = self.layer0(input)
+        input = self.layer1(input)
+        input = self.layer2(input)
+        return input
+
+    def get_layer3_output(self, input):
+        input = self.layer0(input)
+        input = self.layer1(input)
+        input = self.layer2(input)
+        input = self.layer3(input)
+        return input
+
+    def get_layer4_output(self, input):
+        input = self.layer0(input)
+        input = self.layer1(input)
+        input = self.layer2(input)
+        input = self.layer3(input)
+        input = self.layer4(input)
+        return input
+
+
+class ResNetTracker():
+    def __init__(self):
+        # Initialize class means
+        self.layer0_means = {}
+        self.layer1_means = {}
+        self.layer2_means = {}
+        self.layer3_means = {}
+        self.layer4_means = {}
+        self.output_means = {}
+
+        self.var_layer0 = {}
+        self.var_layer1 = {}
+        self.var_layer2 = {}
+        self.var_layer3 = {}
+        self.var_layer4 = {}
+        self.var_output = {}
+
+        self.nc1_layer0 = []
+        self.nc1_layer1 = []
+        self.nc1_layer2 = []
+        self.nc1_layer3 = []
+        self.nc1_layer4 = []
+        self.nc1_output = []

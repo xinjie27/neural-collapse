@@ -1,11 +1,12 @@
 import argparse
 import os
 import numpy as np
+from matplotlib import pyplot as plt
 import torch
 from torchvision import models
 
 from functions import *
-from models import *
+from ResNet import ResNet18
 
 
 def get_config():
@@ -17,21 +18,6 @@ def get_config():
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        "-d",
-        "--dataset",
-        type=str,
-        choices=["mnist"],
-        required=True,
-        help="Choose a dataset",
-    )
-    parser.add_argument(
-        "-m",
-        "--mode",
-        type=str,
-        default="train",
-        choices=["train", "test"],
-    )
-    parser.add_argument(
         "-o",
         "--output-dir",
         type=str,
@@ -40,7 +26,12 @@ def get_config():
         dest="output_dir",
     )
     parser.add_argument(
-        "-e", "--epochs", type=int, default=5, help="Number of epochs", dest="n_epochs"
+        "-e",
+        "--epochs",
+        type=int,
+        default=350,
+        help="Number of epochs",
+        dest="num_epochs",
     )
     parser.add_argument(
         "-b",
@@ -71,13 +62,16 @@ def get_config():
 def main(cfg):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     cfg["device"] = device
+    num_epochs = cfg["num_epochs"]
     
-    data, in_channels, num_classes = get_dataset(cfg)
-    model = build_resnet18(in_channels, num_classes)
+    data, in_channels, num_classes = get_dataset()
+    model = ResNet18(in_channels, num_classes)
     model.to(device)
+    tracker = ResNetTracker()
 
-    train(data, model, cfg)
-    pass
+    train(cfg, data, model, tracker)
+    
+    plt.plot(range(num_epochs), tracker.nc1_output)
 
 
 
