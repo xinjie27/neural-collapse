@@ -49,6 +49,13 @@ def get_config():
         help="Learning rate",
         dest="learning_rate",
     )
+    parser.add_argument(
+        "--lambda",
+        type=float,
+        default=1,
+        help="Lambda, regularizing coefficient",
+        dest="lmbda",
+    )
 
     args = parser.parse_args()
     config = {}
@@ -63,16 +70,16 @@ def main(cfg):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     cfg["device"] = device
     num_epochs = cfg["num_epochs"]
-    
+    output_dir = cfg["output_dir"]
+
     data, in_channels, num_classes = get_dataset()
     model = ResNet18(in_channels, num_classes)
     model.to(device)
-    tracker = ResNetTracker()
+    tracker = ResNetTracker(num_classes, num_epochs, output_dir)
 
     train(cfg, data, model, tracker)
-    
-    plt.plot(range(num_epochs), tracker.nc1_output)
 
+    tracker.plot_nc2()
 
 
 if __name__ == "__main__":
