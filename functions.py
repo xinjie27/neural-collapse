@@ -4,8 +4,6 @@ from torchvision import datasets
 from torchvision.transforms import ToTensor
 from torch.utils.data import DataLoader
 
-from ResNet import ResNetTracker
-
 
 def get_dataset():
     data = datasets.MNIST(root="data", train=True, download=True, transform=ToTensor())

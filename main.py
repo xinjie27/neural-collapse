@@ -6,7 +6,7 @@ import torch
 from torchvision import models
 
 from functions import *
-from ResNet import ResNet18
+from ResNet import ResNet18, ResNetTracker
 
 
 def get_config():
