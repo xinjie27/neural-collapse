@@ -53,7 +53,7 @@ def get_config():
     parser.add_argument(
         "--lambda",
         type=float,
-        default=0.5,
+        default=0.1,
         help="Lambda, regularizing coefficient",
         dest="lmbda",
     )
@@ -74,6 +74,8 @@ def main(cfg):
     output_dir = cfg["output_dir"]
 
     data, in_channels, num_classes = get_dataset()
+    cfg["num_classes"] = num_classes
+
     # model = ResNet18(in_channels, num_classes)
     model = ResNet2Layer(in_channels, num_classes)
     model.to(device)

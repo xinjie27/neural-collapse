@@ -6,12 +6,11 @@ class NCLoss():
     def __init__(self, cfg):
         self.device = cfg["device"]
         self.num_classes = cfg["num_classes"]
-        self.batch_size = cfg["batch_size"]
         self.lmbda = cfg["lmbda"] # Regularizing coefficient
 
     def loss(self, predictions, labels):
         ## General
-        predictions = predictions.reshape(self.batch_size, -1)
+        predictions = predictions.reshape((predictions.shape[0], -1))
         num_features = predictions.shape[1]
         # Initialize class means and covariances
         CMeans = torch.zeros([self.num_classes, num_features]).to(self.device)
@@ -55,6 +54,7 @@ class NCLoss():
             G += torch.ones((self.num_classes, self.num_classes),device=self.device) / (self.num_classes - 1)
             G -= torch.diag(torch.diag(G))
             return torch.norm(G, 1).item() / (self.num_classes * (self.num_classes - 1))
+            
         self.nc2_angle_loss = _coherence(CMeans.T / CNorms)
 
-        self.total_loss = self.nc1_loss + self.lmbda * (self.nc2_norm_loss + self.nc2_angle_loss)
+        return self.nc1_loss # + self.lmbda * (self.nc2_norm_loss + self.nc2_angle_loss)
