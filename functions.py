@@ -4,6 +4,9 @@ from torchvision import datasets
 from torchvision.transforms import ToTensor
 from torch.utils.data import DataLoader
 
+from loss import NCLoss
+from ResNet import ResNetTracker
+
 
 def get_dataset():
     data = datasets.MNIST(root="data", train=True, download=True, transform=ToTensor())
@@ -13,7 +16,7 @@ def get_dataset():
     return data, in_channels, num_classes
 
 
-def train(cfg, data, model, tracker, track=True):
+def train(cfg, data, model, track=True):
     batch_size = cfg["batch_size"]
     num_epochs = cfg["num_epochs"]
 
@@ -21,13 +24,19 @@ def train(cfg, data, model, tracker, track=True):
 
     train_loader = DataLoader(data, batch_size=batch_size, shuffle=True)
 
-    for epoch in range(num_epochs):
-        train_epoch(cfg, model, train_loader, epoch)
-        if track:
+    if track:
+        output_dir = cfg["output_dir"]
+        tracker = ResNetTracker(model.num_classes, num_epochs, output_dir)
+        for epoch in range(num_epochs):
+            train_epoch(cfg, model, train_loader, epoch)
             track_general(cfg, model, train_loader, tracker)
             # track_nc1(cfg, model, train_loader, tracker)
             track_nc2(cfg, model, train_loader, tracker)
             print("Tracking complete!")
+        tracker.plot_nc2()
+    else:
+        for epoch in range(num_epochs):
+            train_epoch(cfg, model, train_loader, epoch)
 
 
 def train_epoch(cfg, model, loader, epoch):
@@ -41,8 +50,10 @@ def train_epoch(cfg, model, loader, epoch):
 
         # Compute prediction error
         pred = model(X)
-        loss_fn = nn.CrossEntropyLoss()
-        loss = loss_fn(pred, y)
+        # loss_fn = nn.CrossEntropyLoss()
+        # loss = loss_fn(pred, y)
+        nc_loss = NCLoss(cfg)
+        loss = nc_loss.loss(pred, y)
 
         # Backpropagation
         optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)

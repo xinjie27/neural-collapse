@@ -7,6 +7,7 @@ from torchvision import models
 
 from functions import *
 from ResNet import ResNet18, ResNetTracker
+from network_partial import ResNet2Layer
 
 
 def get_config():
@@ -73,13 +74,12 @@ def main(cfg):
     output_dir = cfg["output_dir"]
 
     data, in_channels, num_classes = get_dataset()
-    model = ResNet18(in_channels, num_classes)
+    # model = ResNet18(in_channels, num_classes)
+    model = ResNet2Layer(in_channels, num_classes)
     model.to(device)
-    tracker = ResNetTracker(num_classes, num_epochs, output_dir)
-
-    train(cfg, data, model, tracker)
-
-    tracker.plot_nc2()
+    
+    train(cfg, data, model, track=False)
+    
 
 
 if __name__ == "__main__":
