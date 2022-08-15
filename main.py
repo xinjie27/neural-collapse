@@ -52,7 +52,7 @@ def get_config():
     parser.add_argument(
         "--lambda",
         type=float,
-        default=1,
+        default=0.5,
         help="Lambda, regularizing coefficient",
         dest="lmbda",
     )
