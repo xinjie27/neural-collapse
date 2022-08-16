@@ -4,10 +4,11 @@ import numpy as np
 from matplotlib import pyplot as plt
 import torch
 from torchvision import models
+import json
 
 from functions import *
 from ResNet import ResNet18, ResNetTracker
-from network_partial import ResNet2Layer
+from network_partial import ResNet2Layer, ResNetFC
 
 
 def get_config():
@@ -38,7 +39,7 @@ def get_config():
         "-b",
         "--batch-size",
         type=int,
-        default=128,
+        default=256,
         help="Batch size",
         dest="batch_size",
     )
@@ -46,14 +47,14 @@ def get_config():
         "-l",
         "--learning-rate",
         type=float,
-        default=3e-5,
+        default=1e-3,
         help="Learning rate",
         dest="learning_rate",
     )
     parser.add_argument(
         "--lambda",
         type=float,
-        default=0.1,
+        default=2,
         help="Lambda, regularizing coefficient",
         dest="lmbda",
     )
@@ -67,20 +68,29 @@ def get_config():
     return config
 
 
+def save_config(cfg, filepath):
+    with open(filepath, "w") as f:
+        json.dump(cfg, f)
+    
+
 def main(cfg):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     cfg["device"] = device
-    num_epochs = cfg["num_epochs"]
     output_dir = cfg["output_dir"]
+    if not os.path.exists(output_dir):
+        os.mkdir(output_dir)
 
     data, in_channels, num_classes = get_dataset()
     cfg["num_classes"] = num_classes
 
     # model = ResNet18(in_channels, num_classes)
     model = ResNet2Layer(in_channels, num_classes)
+    # model = ResNetFC(784, num_classes)
     model.to(device)
     
-    train(cfg, data, model, track=False)
+    # train(cfg, data, model, track=False)
+    transfer_train(cfg, data, model, fc_epochs=50)
+    save_config(cfg, output_dir + "/config.json")
     
 
 
