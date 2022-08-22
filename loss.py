@@ -38,15 +38,15 @@ class NCLoss():
         ## NC1
         self.nc1_loss = torch.sum(CVars.T / torch.square(CNorms)) # Noise-to-signal TODO: changed CVars to CVars.T
         
-        ## NC2 (Act as a regularizer)
-        self.nc2_norm_loss = torch.std(CNorms)/torch.mean(CNorms)
+        ## NC2
+        self.nc2_norm_loss = torch.square(torch.std(CNorms)/torch.mean(CNorms))
 
         CosMap = torch.zeros([self.num_classes, self.num_classes])
         for c1 in range(self.num_classes):
             for c2 in range(self.num_classes):
                 CosMap[c1, c2] = torch.dot(CMeans_G[c1], CMeans_G[c2]) / (CNorms[c1] * CNorms[c2])
         CosMap += (1 / (self.num_classes - 1))
-        self.nc2_angle_loss = torch.mean(torch.abs(CosMap))
+        self.nc2_angle_loss = torch.square(torch.mean(torch.abs(CosMap)))
 
         # # Compute mutual coherence
         # def _coherence(V): 
